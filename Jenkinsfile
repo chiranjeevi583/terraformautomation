@@ -15,6 +15,7 @@ pipeline {
                     def tfHome = tool name: 'Terraform'
                     env.PATH = "${tfHome}:${env.PATH}"
                 }
+		    sh 'pwd'
                 sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./terraform.json'
                 sh 'terraform --version'               
                
