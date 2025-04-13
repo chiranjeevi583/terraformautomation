@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SVC_ACCOUNT_KEY = credentials('JENKINS-ID')
+        SVC_ACCOUNT_KEY = credentials('TERRAFORM-AUTHE')
     }
 
     stages {
