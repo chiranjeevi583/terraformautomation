@@ -1,14 +1,12 @@
 provider "google" {
-  project = "my-project-279-436907"   # Replace with your project ID
-  region  = "us-central1"        # Change if needed
+  project     = "gcp-dev-space"   # Updated project ID
+  region      = "us-central1"     # Change if needed
   credentials = file("terraform.json")
 }
 
-
-
 resource "google_compute_instance" "web_server" {
   name         = "web-server-instance"
-  machine_type = "f1-micro"       # Change if needed
+  machine_type = "f1-micro"        # Change if needed
   zone         = "us-central1-a"
   tags = ["http-server"]
   boot_disk {
