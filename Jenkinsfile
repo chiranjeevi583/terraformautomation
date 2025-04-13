@@ -2,38 +2,67 @@ pipeline {
     agent any
 
     environment {
-        SVC_ACCOUNT_KEY = credentials('TERRAFORM-AUTHE')
+        TF_VAR_project = 'gcp-dev-practice'
+        TF_VAR_region  = 'us-central1'
+        TF_VAR_zone    = 'us-central1-c'
+    }
+
+    parameters {
+        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Select Terraform action')
+    }
+
+    tools {
+        terraform 'Terraform' // make sure this name matches exactly what you configured in Jenkins
     }
 
     stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
 
-        stage('Set Terraform path') {
+        stage('Set Terraform Path') {
             steps {
                 script {
-                    // Use the tool directive to set up the Terraform path
-                    def tfHome = tool name: 'Terraform'
+                    tfHome = tool name: 'Terraform'
                 }
-                sh 'pwd'
-                sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./terraform.json'
-                sh 'terraform --version'  // Verifies that terraform is available in the PATH
+            }
+        }
+
+        stage('Terraform Version') {
+            steps {
+                sh """
+                    export PATH=${tfHome}:\$PATH
+                    terraform --version
+                """
             }
         }
 
         stage('Initialize Terraform') {
             steps {
-                sh 'terraform init'
+                sh """
+                    export PATH=${tfHome}:\$PATH
+                    terraform init
+                """
             }
         }
 
-        stage('Terraform plan') {
+        stage('Terraform Plan') {
             steps {
-                sh 'terraform plan'
+                sh """
+                    export PATH=${tfHome}:\$PATH
+                    terraform plan
+                """
             }
         }
 
         stage('Terraform Action') {
             steps {
-                sh 'terraform ${ACTION} --auto-approve'
+                sh """
+                    export PATH=${tfHome}:\$PATH
+                    terraform ${params.ACTION} -auto-approve
+                """
             }
         }
     }
